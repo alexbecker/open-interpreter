@@ -96,7 +96,7 @@ def convert_to_openai_messages(
 
             else:
                 # This should be experimented with.
-                if interpreter.code_output_sender == "user":
+                if interpreter.code_output_sender in ["user", "input"]:
                     if message["content"].strip() == "":
                         content = interpreter.empty_code_output_template
                     else:
@@ -104,7 +104,7 @@ def convert_to_openai_messages(
                             "{content}", message["content"]
                         )
 
-                    new_message["role"] = "user"
+                    new_message["role"] = interpreter.code_output_sender
                     new_message["content"] = content
                 elif interpreter.code_output_sender == "assistant":
                     new_message["role"] = "assistant"
