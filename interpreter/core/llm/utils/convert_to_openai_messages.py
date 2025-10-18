@@ -37,6 +37,7 @@ def convert_to_openai_messages(
             continue
 
         new_message = {}
+        additional_messages = []
 
         if message["type"] == "message":
             new_message["role"] = message[
@@ -105,6 +106,19 @@ def convert_to_openai_messages(
                         )
 
                     new_message["role"] = interpreter.code_output_sender
+                    new_message["content"] = content
+                elif interpreter.code_output_sender == "mixed":
+                    if message["content"].strip() == "":
+                        content = interpreter.empty_code_output_template
+                    else:
+                        # Shouldn't actually be a template
+                        content = interpreter.code_output_template
+                        # Send the actual output in a subsequent message
+                        additional_messages.append({
+                            "role": "input",
+                            "content": message["content"],
+                        })
+                    new_message["role"] = "user"
                     new_message["content"] = content
                 elif interpreter.code_output_sender == "assistant":
                     new_message["role"] = "assistant"
@@ -251,6 +265,7 @@ def convert_to_openai_messages(
             new_message["content"] = new_message["content"].strip()
 
         new_messages.append(new_message)
+        new_messages.extend(additional_messages)
 
     if function_calling == False:
         combined_messages = []
