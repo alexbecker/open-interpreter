@@ -52,7 +52,7 @@ class Llm:
 
         # Settings
         self.model = "gpt-4o"
-        self.temperature = 0.0
+        self.temperature = None
 
         self.supports_vision = None  # Will try to auto-detect
         self.vision_renderer = (
@@ -294,7 +294,7 @@ Continuing...
             params["api_version"] = self.api_version
         if self.max_tokens:
             params["max_tokens"] = self.max_tokens
-        if self.temperature:
+        if self.temperature is not None:
             params["temperature"] = self.temperature
         if hasattr(self.interpreter, "conversation_id"):
             params["conversation_id"] = self.interpreter.conversation_id
